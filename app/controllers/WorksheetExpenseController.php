@@ -20,15 +20,14 @@ class WorksheetExpenseController extends \BaseController {
 	{
 		$permission = WorksheetExpense::getPermission();
         if(@$permission->consulta) {
-			$data['expenses'] = $expenses = WorksheetExpense::getData();
+			$data['expenses'] = $expenses = WorksheetExpense::getDataDaily();
+            $data["permissionExpense"] = $permission;
 			if(Request::ajax()) {
 	            $data["links"] = $expenses->links();
-	            $data["permission"] = $permission;
 	            $expenses = View::make('core.worksheet.expenses.expenses', $data)->render();
 	            return Response::json(['html' => $expenses]);
 	        }
 
-            $data['permission'] = $permission;
 	        return View::make('core.worksheet.expenses.index')->with($data);	
 		}else{
             return View::make('core.denied');   
@@ -45,11 +44,20 @@ class WorksheetExpenseController extends \BaseController {
 	{
 		$permission = WorksheetExpense::getPermission();
         if(@$permission->adiciona) {
-			$expense = new WorksheetExpense;
+        	$date = Input::has('fecha') ? Input::get('fecha') : date('Y-m-d');
+            $data['date'] = $date;
+        	$data['expenses'] = $expenses = WorksheetExpense::getData($date);
+            $data["permissionExpense"] = $permission;
+			if(Request::ajax()) {
+	            $data["links"] = $expenses->links();
+	            $expenses = View::make('core.worksheet.expenses.expensesitem', $data)->render();
+	            return Response::json(['html' => $expenses]);
+	        }
 
-	        return View::make('core.worksheet.expenses.form')->with(['expense' => $expense]);
+            $data['services'] = WorksheetService::lists('nombre', 'id');
+	        return View::make('core.worksheet.expenses.form')->with($data);
 		}else{
-            return View::make('core.denied');   
+			return Redirect::route('planilla.gastos.index');
         }
 	}
 
@@ -69,6 +77,7 @@ class WorksheetExpenseController extends \BaseController {
 	        	DB::beginTransaction();	
 	        	try{
 	        		$expense->fill($data);
+	        		$expense->fecha = date('Y-m-d');
 	        		$expense->save();
 
 					DB::commit();
@@ -94,17 +103,19 @@ class WorksheetExpenseController extends \BaseController {
 	 */
 	public function show($id)
 	{
-		$permission = WorksheetExpense::getPermission();
-        if(@$permission->consulta) {
-			$expense = WorksheetExpense::find($id);
-			if(!$expense instanceof WorksheetExpense) {
-				App::abort(404);	
-			}
-
-	        return View::make('core.worksheet.expenses.show')->with(['expense' => $expense, 'permission' => $permission]);
-		}else{
-            return View::make('core.denied');   
-        }
+		if(Request::ajax()) {
+			$permission = WorksheetExpense::getPermission();
+	        if(@$permission->consulta) {
+				$expense = WorksheetExpense::find($id);
+				if(!$expense instanceof WorksheetExpense) {
+					App::abort(404);	
+				}
+				return Response::json(['success' => true, 'expense' => $expense]);
+			}else{
+	            return View::make('core.denied');   
+	        }
+       	}
+        App::abort(404);	
 	}
 
 
@@ -116,17 +127,18 @@ class WorksheetExpenseController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-		$permission = WorksheetExpense::getPermission();
-        if(@$permission->modifica) {
-			$expense = WorksheetExpense::find($id);
-			if(!$expense instanceof WorksheetExpense) {
-				App::abort(404);	
-			}
-			
-	        return View::make('core.worksheet.expenses.form')->with(['expense' => $expense]);
-		}else{
-            return View::make('core.denied');   
-        }
+		if(Request::ajax()) {
+			$permission = WorksheetExpense::getPermission();
+	        if(@$permission->modifica) {
+				$expense = WorksheetExpense::find($id);
+				if(!$expense instanceof WorksheetExpense) {
+					App::abort(404);	
+				}
+
+			}else{
+	            return View::make('core.denied');   
+	        }
+      	}
 	}
 
 
@@ -139,26 +151,32 @@ class WorksheetExpenseController extends \BaseController {
 	public function update($id)
 	{
 		if(Request::ajax()) {
+			$permission = WorksheetExpense::getPermission();
+
 			$expense = WorksheetExpense::find($id);
 			if(!$expense instanceof WorksheetExpense) {
 				App::abort(404);	
 			}       
-	        $data = Input::all();
-	      	if ($expense->isValid($data)){      		        	
-	       		DB::beginTransaction();	
-	        	try{
-	        		$expense->fill($data);	
-	        		$expense->save();
-					DB::commit();
-					return Response::json(array('success' => true, 'expense' => $expense));
-			    }catch(\Exception $exception){
-				    DB::rollback();
-					return Response::json(array('success' => false, 'errors' =>  "$exception - Consulte al administrador."));
-				}
-	        }
-  			$data['errors'] = $expense->errors;
-        	$errors = View::make('errors', $data)->render();
-    		return Response::json(array('success' => false, 'errors' => $errors));
+
+			if(@$permission->modifica && $expense->fecha == date('Y-m-d')) {
+		        $data = Input::all();
+		      	if ($expense->isValid($data)){      		        	
+		       		DB::beginTransaction();	
+		        	try{
+		        		$expense->fill($data);	
+		        		$expense->save();
+						DB::commit();
+						return Response::json(array('success' => true, 'expense' => $expense));
+				    }catch(\Exception $exception){
+					    DB::rollback();
+						return Response::json(array('success' => false, 'errors' =>  "$exception - Consulte al administrador."));
+					}
+		        }
+	  			$data['errors'] = $expense->errors;
+	        	$errors = View::make('errors', $data)->render();
+	    		return Response::json(array('success' => false, 'errors' => $errors));
+			}
+        	App::abort(403);
 		}
         App::abort(404);
 	}
@@ -172,7 +190,21 @@ class WorksheetExpenseController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		if(Request::ajax()) {
+			$permission = WorksheetExpense::getPermission();
+
+			$expense = WorksheetExpense::find($id);
+			if(!$expense instanceof WorksheetExpense) {
+				App::abort(404);	
+			} 
+
+			if(@$permission->borra && $expense->fecha == date('Y-m-d')) {
+		        $expense->delete();
+	    		return Response::json(['success' => true]);
+	       	}
+        	App::abort(403);
+	   	}
+        App::abort(404);
 	}
 
 

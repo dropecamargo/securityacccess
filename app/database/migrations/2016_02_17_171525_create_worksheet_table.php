@@ -17,18 +17,16 @@ class CreateWorksheetTable extends Migration {
             $table->increments('id');  
             $table->integer('cliente')->unsigned();
             $table->integer('servicio')->unsigned();
-            $table->integer('examen')->unsigned()->nullable();
      		$table->date('fecha');
      		$table->time('hora');
             $table->integer('porcentaje')->nullable();              
-            $table->float('valor')->nullable();
-            $table->float('descuento')->nullable();
+            $table->double('valor')->nullable();
+            $table->double('descuento')->nullable();
             $table->boolean('factura')->default(false);
      		$table->time('hora_atencion');
 
         	$table->foreign('cliente')->references('id')->on('cliente')->onDelete('restrict');        	      
         	$table->foreign('servicio')->references('id')->on('servicio')->onDelete('restrict');        	      
-        	$table->foreign('examen')->references('id')->on('examen')->onDelete('restrict');        	      
         });
 	}
 

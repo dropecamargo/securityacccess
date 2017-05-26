@@ -14,20 +14,20 @@ class Certificate extends Eloquent {
 
     public $timestamps = false;
 
-    public static $factores = ['F' => 'Fisico', 'Q' => 'Quimico', 'E' => 'Ergonomico', 'M' => 'Mecanicos', 'L' => 'Locativos', 
+    public static $factores = ['F' => 'Fisico', 'Q' => 'Quimico', 'E' => 'Ergonomico', 'M' => 'Mecanicos', 'L' => 'Locativos',
         'P' => 'Psicolaborales', 'O' => 'Otros'];
 
     public static $embarazo = ['NA' => 'No Aplica', 'P' => 'Positivo', 'N' => 'Negativo'];
-    
+
     public static $hipertension = ['NA' => 'Normal', 'HE' => 'Hipertenso', 'HO' => 'Hipotenso'];
 
     public static $lateralidad = ['IZ' => 'Izquierda', 'DE' => 'Derecha'];
-    
+
     protected $fillable = ['cliente', 'fecha', 'empresa',
-        'oempresa1', 'oempresa2', 'oempresa3', 'oae1', 'oae2', 'oae3', 'otiempo1', 'otiempo2', 'otiempo3', 'ocargo1', 'ocargo2', 
+        'oempresa1', 'oempresa2', 'oempresa3', 'oae1', 'oae2', 'oae3', 'otiempo1', 'otiempo2', 'otiempo3', 'ocargo1', 'ocargo2',
         'ocargo3', 'otipo1', 'otipo2', 'otipo3', 'oepp1', 'oepp2', 'oepp3',
         'lempresa1', 'lempresa2', 'lfecha1', 'lfecha2', 'lcausa1', 'lcausa2', 'ldiagnostico1', 'ldiagnostico2', 'lfactor1', 'lfactor2', 'lincapacidad1', 'lincapacidad2',
-        'fenfermedad1', 'fenfermedad2', 'fenfermedad3', 'fenfermedad4', 'fenfermedad5', 'fenfermedad6', 'fenfermedad7', 'fenfermedad8', 
+        'fenfermedad1', 'fenfermedad2', 'fenfermedad3', 'fenfermedad4', 'fenfermedad5', 'fenfermedad6', 'fenfermedad7', 'fenfermedad8',
         'fparentesco1', 'fparentesco2', 'fparentesco3', 'fparentesco4', 'fparentesco5', 'fparentesco6', 'fparentesco7', 'fparentesco8',
         'penfermedad1', 'penfermedad2', 'penfermedad3', 'penfermedad4', 'penfermedad5', 'penfermedad6', 'penfermedad7', 'penfermedad8', 'penfermedad9', 'penfermedad10',
         'penfermedad11', 'penfermedad12', 'penfermedad13', 'penfermedad14', 'penfermedad15', 'pfecha1', 'pfecha2', 'pfecha3', 'pfecha4', 'pfecha5', 'pfecha6', 'pfecha7',
@@ -39,18 +39,18 @@ class Certificate extends Eloquent {
         'si1', 'si2', 'si3', 'si4', 'si5', 'si6', 'si7', 'no1', 'no2', 'no3', 'no4', 'no5', 'no6', 'no7', 'observacion1', 'observacion2', 'observacion3', 'observacion4',
         'observacion5', 'observacion6', 'observacion7', 'apto1', 'apto2', 'apto3', 'apto4', 'apto5', 'examen1', 'examen2', 'examen3', 'aplazado', 'razon',
         'diagnostica1', 'diagnostica2', 'diagnostica3', 'limitacion1', 'limitacion2', 'limitacion3', 'limitacion4', 'limitacion5', 'limitacion6', 'limitacion7',
-        'limitacion8', 'limitacion9', 'limitacion10', 'limitacion11', 'limitacion12', 'limitacion13', 'embarazo' 
+        'limitacion8', 'limitacion9', 'limitacion10', 'limitacion11', 'limitacion12', 'limitacion13', 'embarazo'
     ];
 
     public function isValid($data)
     {
-        $rules = array(        
-            'cliente' => 'required|numeric',    
-            'empresa' => 'required|numeric',    
+        $rules = array(
+            'cliente' => 'required|numeric',
+            'empresa' => 'required|numeric',
             'fecha' => 'required|date_format:Y-m-d',
             'hipertension' => 'required|string'
         );
-        
+
         $messages = array(
             'hipertension.required'    => 'El campo hipertension de la sección Examen Fisico es obligatorio.'
         );
@@ -61,11 +61,11 @@ class Certificate extends Eloquent {
         //     $rules['cedula'] .= '|required';
         // }
 
-        $validator = Validator::make($data, $rules, $messages);        
+        $validator = Validator::make($data, $rules, $messages);
         if ($validator->passes()) {
             return true;
-        }        
-        $this->errors = $validator->errors();        
+        }
+        $this->errors = $validator->errors();
         return false;
     }
 
@@ -76,23 +76,23 @@ class Certificate extends Eloquent {
 
 	public static function getData()
     {
-        $query = Certificate::query();  
+        $query = Certificate::query();
         $query->select('certificado.*', 'cliente.nombre as cliente_nombre');
         $query->join('cliente', 'certificado.cliente', '=', 'cliente.id');
-   
-        if (Input::has("fecha")) {          
+
+        if (Input::has("fecha")) {
             $query->where('certificado.fecha', Input::get("fecha"));
         }
 
-        if (Input::has("empresa")) {          
+        if (Input::has("empresa")) {
             $query->where('certificado.empresa', Input::get("empresa"));
         }
-        if (Input::has("cliente_nombre")) {          
+        if (Input::has("cliente_nombre")) {
             $query->where('cliente.nombre', 'like', '%'.Input::get("cliente_nombre").'%');
         }
-        if (Input::has("cliente_cedula")) {          
+        if (Input::has("cliente_cedula")) {
             $query->where('cliente.cedula', 'like', '%'.Input::get("cliente_cedula").'%');
-        }     
+        }
         $query->orderby('certificado.fecha', 'DESC');
         return $query->paginate();
     }
@@ -126,7 +126,7 @@ class Certificate extends Eloquent {
         if(Input::has('fenfermedad6')) $this->fenfermedad6 = true; else $this->fenfermedad6 = false;
         if(Input::has('fenfermedad7')) $this->fenfermedad7 = true; else $this->fenfermedad7 = false;
         if(Input::has('fenfermedad8')) $this->fenfermedad8 = true; else $this->fenfermedad8 = false;
-        
+
         if(Input::has('penfermedad1')) $this->penfermedad1 = true; else $this->penfermedad1 = false;
         if(Input::has('penfermedad2')) $this->penfermedad2 = true; else $this->penfermedad2 = false;
         if(Input::has('penfermedad3')) $this->penfermedad3 = true; else $this->penfermedad3 = false;
@@ -142,7 +142,7 @@ class Certificate extends Eloquent {
         if(Input::has('penfermedad13')) $this->penfermedad13 = true; else $this->penfermedad13 = false;
         if(Input::has('penfermedad14')) $this->penfermedad14 = true; else $this->penfermedad14 = false;
         if(Input::has('penfermedad15')) $this->penfermedad15 = true; else $this->penfermedad15 = false;
-        
+
         if(Input::has('n1')) $this->n1 = true; else $this->n1 = false;
         if(Input::has('n2')) $this->n2 = true; else $this->n2 = false;
         if(Input::has('n3')) $this->n3 = true; else $this->n3 = false;
@@ -157,7 +157,7 @@ class Certificate extends Eloquent {
         if(Input::has('n12')) $this->n12 = true; else $this->n12 = false;
         if(Input::has('n13')) $this->n13 = true; else $this->n13 = false;
         if(Input::has('n14')) $this->n14 = true; else $this->n14 = false;
-        
+
         if(Input::has('a1')) $this->a1 = true; else $this->a1 = false;
         if(Input::has('a2')) $this->a2 = true; else $this->a2 = false;
         if(Input::has('a3')) $this->a3 = true; else $this->a3 = false;
@@ -173,28 +173,28 @@ class Certificate extends Eloquent {
         if(Input::has('a13')) $this->a13 = true; else $this->a13 = false;
         if(Input::has('a14')) $this->a14 = true; else $this->a14 = false;
 
-        if(Input::has('si1')) $this->si1 = true; else $this->si1 = false;    
-        if(Input::has('si2')) $this->si2 = true; else $this->si2 = false;    
-        if(Input::has('si3')) $this->si3 = true; else $this->si3 = false;    
-        if(Input::has('si4')) $this->si4 = true; else $this->si4 = false;    
-        if(Input::has('si5')) $this->si5 = true; else $this->si5 = false;    
-        if(Input::has('si6')) $this->si6 = true; else $this->si6 = false;    
-        if(Input::has('si7')) $this->si7 = true; else $this->si7 = false; 
+        if(Input::has('si1')) $this->si1 = true; else $this->si1 = false;
+        if(Input::has('si2')) $this->si2 = true; else $this->si2 = false;
+        if(Input::has('si3')) $this->si3 = true; else $this->si3 = false;
+        if(Input::has('si4')) $this->si4 = true; else $this->si4 = false;
+        if(Input::has('si5')) $this->si5 = true; else $this->si5 = false;
+        if(Input::has('si6')) $this->si6 = true; else $this->si6 = false;
+        if(Input::has('si7')) $this->si7 = true; else $this->si7 = false;
 
-        if(Input::has('no1')) $this->no1 = true; else $this->no1 = false;    
-        if(Input::has('no2')) $this->no2 = true; else $this->no2 = false;    
-        if(Input::has('no3')) $this->no3 = true; else $this->no3 = false;    
-        if(Input::has('no4')) $this->no4 = true; else $this->no4 = false;    
-        if(Input::has('no5')) $this->no5 = true; else $this->no5 = false;    
-        if(Input::has('no6')) $this->no6 = true; else $this->no6 = false;    
-        if(Input::has('no7')) $this->no7 = true; else $this->no7 = false;  
+        if(Input::has('no1')) $this->no1 = true; else $this->no1 = false;
+        if(Input::has('no2')) $this->no2 = true; else $this->no2 = false;
+        if(Input::has('no3')) $this->no3 = true; else $this->no3 = false;
+        if(Input::has('no4')) $this->no4 = true; else $this->no4 = false;
+        if(Input::has('no5')) $this->no5 = true; else $this->no5 = false;
+        if(Input::has('no6')) $this->no6 = true; else $this->no6 = false;
+        if(Input::has('no7')) $this->no7 = true; else $this->no7 = false;
 
         if(Input::has('apto1')) $this->apto1 = true; else $this->apto1 = false;
         if(Input::has('apto2')) $this->apto2 = true; else $this->apto2 = false;
         if(Input::has('apto3')) $this->apto3 = true; else $this->apto3 = false;
         if(Input::has('apto4')) $this->apto4 = true; else $this->apto4 = false;
         if(Input::has('apto5')) $this->apto5 = true; else $this->apto5 = false;
-        
+
         if(Input::has('examen1')) $this->examen1 = true; else $this->examen1 = false;
         if(Input::has('examen2')) $this->examen2 = true; else $this->examen2 = false;
         if(Input::has('examen3')) $this->examen3 = true; else $this->examen3 = false;
@@ -217,33 +217,34 @@ class Certificate extends Eloquent {
 
     public function multipleStore()
     {
-        $this->ofactor1 = ''; 
+        $this->ofactor1 = '';
         if(Input::get('ofactor1')) {
-            $this->ofactor1 = implode(',', Input::get('ofactor1')); 
+            $this->ofactor1 = implode(',', Input::get('ofactor1'));
         }
 
-        $this->ofactor2 = ''; 
+        $this->ofactor2 = '';
         if(Input::get('ofactor2')) {
-            $this->ofactor2 = implode(',', Input::get('ofactor2')); 
+            $this->ofactor2 = implode(',', Input::get('ofactor2'));
         }
 
-        $this->ofactor3 = ''; 
+        $this->ofactor3 = '';
         if(Input::get('ofactor3')) {
-            $this->ofactor3 = implode(',', Input::get('ofactor3')); 
+            $this->ofactor3 = implode(',', Input::get('ofactor3'));
         }
     }
 
     public static function report($certificate)
-    {   
+    {
         $customer = Customer::find($certificate->cliente);
         $city = City::find($customer->ciudad);
         $imagen = sprintf('%s%s', public_path(), $customer->imagen ? $customer->imagen : '/images/default-avatar.jpg');
-        $output = '                    
+        $firma = sprintf('%s%s', public_path(), '/images/firma.jpg');
+        $output = '
             <style>
                 .span_check { vertical-align: middle;border: 1px solid black;display: block;height: 15px;text-align: center; font-size: 13px;}
                 .span_firma { display: block; width: 80%; border-bottom: 1px solid black; }
                 .span_huella { display: block; width: 80%; border: 1px solid black;height: 90px; }
-                
+
                 .title { color: #06068F;font-family:\'comic sans ms\';font-size: 18px; }
                 .sub_title { color: #06068F;font-family:\'comic sans ms\';font-size: 16px; }
                 .sub_indice { font-size: 11px; }
@@ -274,7 +275,7 @@ class Certificate extends Eloquent {
                         <th align="left" width="20%" style="font-size: 13px;">Fecha</th>
                         <th align="left" width="20%" style="font-size: 13px;">Documento</th>
                         <th align="left" width="50%" style="font-size: 13px;">Nombre</th>
-                        <td align="left" rowspan="6"><img src="'.$imagen.'" width="100" height="auto"></td>                    
+                        <td align="left" rowspan="6"><img src="'.$imagen.'" width="100" height="auto"></td>
                     </tr>
                     <tr>
                         <td align="left" style="font-size: 13px;">'.$certificate->fecha.'</td>
@@ -284,7 +285,7 @@ class Certificate extends Eloquent {
                     <tr>
                         <th align="left" width="20%" style="font-size: 13px;" nowrap>Sexo</th>
                         <th align="left" width="20%" style="font-size: 13px;" nowrap>Nacionalidad</th>
-                        <th align="left" width="50%" style="font-size: 13px;" nowrap>Ciudad</th>                    
+                        <th align="left" width="50%" style="font-size: 13px;" nowrap>Ciudad</th>
                     </tr>
                     <tr>
                         <td align="left" style="font-size: 13px;">'.Customer::$sex[$customer->sexo].'</td>
@@ -293,7 +294,7 @@ class Certificate extends Eloquent {
                     </tr>
                     <tr>
                         <th align="left" width="20%" style="font-size: 13px;" nowrap>Fecha nacimiento</th>
-                        <th align="left" width="20%" style="font-size: 13px;" nowrap>Edad</th>                    
+                        <th align="left" width="20%" style="font-size: 13px;" nowrap>Edad</th>
                         <th align="left" width="50%" style="font-size: 13px;" nowrap>Lugar nacimiento</th>
                     </tr>
                     <tr>
@@ -316,7 +317,7 @@ class Certificate extends Eloquent {
                                         <td align="left" style="font-size: 13px;">'.$customer->direccion.'</td>
                                     </tr>
                                     <tr>
-                                        
+
                                         <th align="left" width="25%" style="font-size: 13px;">Escolaridad</th>
                                         <th align="left" width="25%" style="font-size: 13px;">Profesion</th>
                                         <th align="left" width="50%" style="font-size: 13px;">Oficio</th>
@@ -468,7 +469,7 @@ class Certificate extends Eloquent {
                         <td align="left" width="30%" style="font-size: 11px;">PRUEBA DE EMBARAZO</td>
                         <td align="left" width="3%"></td>
                         <td align="left" width="30%" style="font-size: 10px;">'.Certificate::getEmbarazos().'</td> -->
-                    </tr> 
+                    </tr>
                 </thead>
             </table>';
 
@@ -558,61 +559,63 @@ class Certificate extends Eloquent {
             <table style="width: 100%;font-size: 13px;">
                 <thead>
                     <tr><td align="left">&nbsp;</td></tr>
-                    <tr> 
+                    <tr>
                         <td align="left">YO '.utf8_decode(ucwords(strtolower($customer->nombre))).utf8_decode(' identificado con cédula de ciudadania ').$customer->cedula.'</td>
                     </tr>
                     <tr>
-                        <td align="left" colspan="3">Declaro que no he omitido ni alterado la informacion aportada por mi, 
+                        <td align="left" colspan="3">Declaro que no he omitido ni alterado la informacion aportada por mi,
                             la cual es veraz y se ajusta a mi condicion actual y real de la salud al ingreso de la empresa.
                         </td>
                     </tr>
                 </thead>
             </table>';
-        
+
         $output .= '
-                <table style="width: 100%;font-size: 13px;">
-                    <tr>
-                        <td align="left" style="width: 40%;">&nbsp;</td>
-                        <td align="left" style="width: 40%;">&nbsp;</td>
-                        <td align="left" rowspan="3" style="width: 20%;"><span class="span_huella">&nbsp;<span></td>
-                    </tr>
-                    <tr>
-                        <td align="left">&nbsp;</td>
-                        <td align="left">&nbsp;</td>
-                        <td align="left">&nbsp;</td></tr>
-                    <tr>
-                        <td>
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td align="left">
-                                        <span class="span_firma">&nbsp;<span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="left">'.(Auth::user()->firma ? 'Dr. '.utf8_decode(ucwords(strtolower(Auth::user()->nombre))) : '&nbsp;').'</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">'.(Auth::user()->firma ? utf8_decode('Cédula: ').Auth::user()->cedula.' Registro: '.Auth::user()->registro : '&nbsp;').'</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td>
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td align="left">
-                                        <span class="span_firma">&nbsp;<span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="left">Paciente: '.utf8_decode(ucwords(strtolower($customer->nombre))).'</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">'.utf8_decode('Cédula: ').$customer->cedula.'</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </thead>
+            <table style="width: 100%;font-size: 13px;" border="0">
+                <tr>
+                    <td align="center" rowspan="2" style="width: 40%;">
+                        <img src="'.$firma.'" width="100" height="auto">
+                    </td>
+                    <td align="left" style="width: 40%;">&nbsp;</td>
+                    <td align="left" rowspan="3" style="width: 20%;">
+                        <span class="span_huella">&nbsp;</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td align="left">
+                                    <span class="span_firma">&nbsp;</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left">'.(Auth::user()->firma ? 'Dr. '.utf8_decode(ucwords(strtolower(Auth::user()->nombre))) : '&nbsp;').'</td>
+                            </tr>
+                            <tr>
+                                <td align="left">'.(Auth::user()->firma ? utf8_decode('Cédula: ').Auth::user()->cedula.' Registro: '.Auth::user()->registro : '&nbsp;').'</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td align="left">
+                                    <span class="span_firma">&nbsp;</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left">Paciente: '.utf8_decode(ucwords(strtolower($customer->nombre))).'</td>
+                            </tr>
+                            <tr>
+                                <td align="left">'.utf8_decode('Cédula: ').$customer->cedula.'</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
             </table>';
         return $output;
     }

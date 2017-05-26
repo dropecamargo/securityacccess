@@ -8,7 +8,7 @@
         </div>
         @if(@$permission->adiciona)
 	        <div class="form-group col-md-2">
-	            <a href="{{ route('planilla.planillas.create', ['date' => date('Y-m-d')]) }}" class="btn btn-success">Nueva planilla</a>
+	            <a href="{{ route('planilla.planillas.create', ['fecha' => date('Y-m-d')]) }}" class="btn btn-success">Nueva planilla</a>
 	        </div>
         @endif
     </div> 

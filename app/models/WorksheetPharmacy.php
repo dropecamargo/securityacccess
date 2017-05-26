@@ -1,12 +1,12 @@
 <?php
 
-class WorksheetService extends Eloquent {
+class WorksheetPharmacy extends Eloquent {
 	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
 	 */
-	protected $table = 'servicio';
+	protected $table = 'farmacia';
 
 	public $errors;
 
@@ -14,15 +14,13 @@ class WorksheetService extends Eloquent {
 
     public $timestamps = false;
 
-    protected $fillable = ['nombre', 'porcentaje', 'valor', 'descuento'];
+    protected $fillable = ['nombre', 'valor'];
 
     public function isValid($data)
     {
         $rules = array(
             'nombre' => 'required|string|max:200',
-	        'porcentaje' => 'required|numeric|min:0|max:100',
             'valor' => 'required|min:1|regex:/^\d*(\.\d{2})?$/',
-            'descuento' => 'required|min:1|regex:/^\d*(\.\d{2})?$/',
       	);
         
         $validator = Validator::make($data, $rules);        
@@ -35,16 +33,16 @@ class WorksheetService extends Eloquent {
 
     public static function getPermission()
     {
-        return Permission::where('rol',Auth::user()->rol)->where('modulo',Module::getModule('worksheetservice'))->first();
+        return Permission::where('rol',Auth::user()->rol)->where('modulo',Module::getModule('worksheetpharmacy'))->first();
     }
 
 	public static function getData()
     {
-        $query = WorksheetService::query();     
+        $query = WorksheetPharmacy::query();     
         if (Input::has("nombre")) {          
-            $query->where('servicio.nombre', 'like', '%'.Input::get("nombre").'%');
+            $query->where('farmacia.nombre', 'like', '%'.Input::get("nombre").'%');
         }   
-        $query->orderby('servicio.nombre', 'ACS');
+        $query->orderby('farmacia.nombre', 'ACS');
         return $query->paginate();
     }
 

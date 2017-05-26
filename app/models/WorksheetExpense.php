@@ -1,6 +1,6 @@
 <?php
 
-class WorksheetExpense extends Eloquent {
+class WorksheetExpense extends BaseModel {
 	/**
 	 * The database table used by the model.
 	 *
@@ -10,18 +10,20 @@ class WorksheetExpense extends Eloquent {
 
 	public $errors;
 
-    protected $perPage = 6;
+    protected $perPage = 10;
 
     public $timestamps = false;
 
-    protected $fillable = ['nombre', 'fecha', 'valor'];
+    protected $fillable = ['nombre', 'servicio', 'valor'];
+    
+    protected $nullable = ['servicio'];
 
     public function isValid($data)
     {
         $rules = array(
             'nombre' => 'required|string|max:200',
-	        'fecha' => 'required|date_format:Y-m-d',
-            'valor' => 'required|min:1|regex:[^[0-9]*$]'
+            'servicio' => 'numeric',
+            'valor' => 'required|min:1|regex:/^\d*(\.\d{2})?$/',
       	);
         
         $validator = Validator::make($data, $rules);        
@@ -37,15 +39,25 @@ class WorksheetExpense extends Eloquent {
         return Permission::where('rol',Auth::user()->rol)->where('modulo',Module::getModule('worksheetexpense'))->first();
     }
 
-	public static function getData()
+	public static function getData($date)
     {
-        $query = WorksheetExpense::query();     
-        if (Input::has("nombre")) {          
-            $query->where('gasto.nombre', 'like', '%'.Input::get("nombre").'%');
-        }
+        $query = WorksheetExpense::query(); 
+        $query->select('gasto.id', 'gasto.valor', DB::raw('gasto.nombre as gasto'), DB::raw('servicio.nombre as servicio'));
+ 
+        $query->leftJoin('servicio', 'gasto.servicio', '=', 'servicio.id');
+        $query->where('gasto.fecha', '=', $date);
+        $query->orderby('gasto.id', 'DESC');
+        return $query->paginate();
+    }
+
+    public static function getDataDaily()
+    {
+        $query = WorksheetExpense::query();  
+        $query->select(DB::raw('DISTINCT(fecha) as fecha'));
+
         if (Input::has("fecha")) {          
             $query->where('gasto.fecha', '=', Input::get("fecha"));
-        }   
+        } 
         $query->orderby('gasto.fecha', 'DESC');
         return $query->paginate();
     }

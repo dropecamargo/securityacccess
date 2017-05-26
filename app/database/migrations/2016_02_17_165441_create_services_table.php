@@ -16,10 +16,11 @@ class CreateServicesTable extends Migration {
 			$table->engine = 'InnoDB';
             $table->increments('id');  
             $table->string('nombre',200);
-            $table->integer('porcentaje')->nullable();   
-	        $table->float('valor')->nullable();
-	        $table->float('descuento')->nullable();
+            $table->integer('porcentaje')->default(0);   
+	        $table->double('valor')->default(0);
+	        $table->double('descuento')->default(0);
             $table->boolean('examen')->default(false);
+            $table->boolean('farmacia')->default(false);
         });	
 	}
 

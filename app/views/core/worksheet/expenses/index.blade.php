@@ -6,27 +6,23 @@
         <div class="form-group col-md-10">
          	<h1 class="page-header">Gastos <small>(Planilla)</small></h1>
         </div>
-        @if(@$permission->adiciona)
+        @if(@$permissionExpense->adiciona)
 	        <div class="form-group col-md-2">
-	            <a href="{{ route('planilla.gastos.create') }}" class="btn btn-success">Nueva gasto</a>
+	            <a href="{{ route('planilla.gastos.create', ['fecha' => date('Y-m-d')]) }}" class="btn btn-success">Nueva gasto</a>
 	        </div>
         @endif
     </div> 
 
 	{{ Form::open(array('route' => 'planilla.gastos.index', 'method' => 'POST', 'id' => 'form-search-expense'), array('role' => 'form')) }}
 	<div class="row">	
-	   	<div class="form-group col-md-1"></div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-4"></div>
+        <div class="form-group col-md-4">
             {{ Form::label('fecha', 'Fecha') }}
             <div class="input-append date"> 
                 {{ Form::text('fecha', null, array('placeholder' => 'yyyy-mm-dd', 'class' => 'form-control')) }}        
             </div>
         </div>
-	   	<div class="form-group col-md-7">           
-            {{ Form::label('nombre', 'Nombre') }}
-            {{ Form::text('nombre', null, array('placeholder' => 'Ingrese nombre', 'class' => 'form-control', 'maxlength' => '50')) }}        
-        </div>
-	   	<div class="form-group col-md-1"></div>
+	   	<div class="form-group col-md-4"></div>
  	</div> 	
  	<div class="row" align="center">
 		<button type="submit" class="btn btn-primary">Buscar</button>

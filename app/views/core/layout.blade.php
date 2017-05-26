@@ -65,7 +65,7 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-list">
                 <li><label class="tree-toggler nav-header">Salud Ocupacional</label>
-                    <ul class="nav nav-list nav-sidebar tree">
+                    <ul class="nav nav-list nav-sidebar tree" style="{{ !in_array(Request::segment(1), ['usuarios', 'roles', 'ciudades', 'pacientes', 'empresas', 'certificados', 'reportes']) ? 'display: none;' : '' }}">
                         <li class="{{ Request::segment(1) == 'usuarios' ? 'active' : '' }}">{{ HTML::linkRoute('usuarios.index', 'Usuarios') }}</li>
                         <li class="{{ Request::segment(1) == 'roles' ? 'active' : '' }}">{{ HTML::linkRoute('roles.index', 'Roles') }}</li>
                         <li class="{{ Request::segment(1) == 'ciudades' ? 'active' : '' }}">{{ HTML::linkRoute('ciudades.index', 'Ciudades') }}</li>
@@ -77,12 +77,14 @@
                 </li>
                 <li class="divider"></li>
                 <li><label class="tree-toggler nav-header">Planilla</label>
-                    <ul class="nav nav-list nav-sidebar tree">
+                    <ul class="nav nav-list nav-sidebar tree" style="{{ !in_array(Request::segment(1), ['planilla']) ? 'display: none;' : '' }}">
                         <li class="{{ Request::segment(2) == 'pacientes' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.pacientes.index', 'Pacientes') }}</li>
                         <li class="{{ Request::segment(2) == 'servicios' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.servicios.index', 'Servicios') }}</li>
                         <li class="{{ Request::segment(2) == 'examen' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.examen.index', 'Exámen') }}</li>
-                        <li class="{{ Request::segment(2) == 'gastos' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.gastos.index', 'Gastos') }}</li>
+                        <li class="{{ Request::segment(2) == 'farmacia' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.farmacia.index', 'Farmacia') }}</li>
+                        <li class="{{ Request::segment(2) == 'gastos' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.gastos.create', 'Gastos', ['fecha' => date('Y-m-d')]) }}</li>
                         <li class="{{ Request::segment(2) == 'planillas' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.planillas.create', 'Planilla', ['fecha' => date('Y-m-d')]) }}</li>
+                        <li class="{{ Request::segment(2) == 'reportes' ? 'active' : '' }}">{{ HTML::linkRoute('planilla.reportes.index', 'Reportes') }}</li>
                     </ul>
                 </li>
             </ul>

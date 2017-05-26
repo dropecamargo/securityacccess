@@ -11,6 +11,7 @@
 				<th>Valor</th>		
 				<th>Descuento</th>		
 				<th>Exámen</th>		
+				<th>Farmacia</th>		
 				<th>&nbsp;</th>
 			</tr>	
 		</thead>     	    	
@@ -22,6 +23,7 @@
 					<td align="right">${{ number_format($service->valor, 2,'.',',' ) }}</td>
 					<td align="right">${{ number_format($service->descuento, 2,'.',',' ) }}</td>
 					<td align="center">{{ $service->examen ? 'SI' : 'NO' }}</td>
+					<td align="center">{{ $service->farmacia ? 'SI' : 'NO' }}</td>
 					<td nowrap="nowrap" style="text-align:right">					
 						<a href="{{ route('planilla.servicios.show', $service->id) }}" class="btn btn-info">Ver</a>
 					    @if(@$permission->modifica)

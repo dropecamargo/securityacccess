@@ -62,7 +62,16 @@ Route::group(array('before' => 'auth'), function()
 		Route::resource('servicios', 'WorksheetServicesController');	
 		Route::resource('examen', 'WorksheetExamController');	
 		Route::resource('gastos', 'WorksheetExpenseController');
+		Route::resource('farmacia', 'WorksheetPharmacyController');
 		Route::resource('planillas', 'WorksheetController');	
+
+		Route::group(['prefix' => 'reportes'], function()	
+		{	
+			Route::post('resumen', 'WorksheetReportesController@resumen');
+			Route::post('framacia', 'WorksheetReportesController@framacia');
+			Route::post('examenes', 'WorksheetReportesController@examenes');
+		});
+		Route::resource('reportes', 'WorksheetReportesController', ['only' => ['index']]);
 	});
 
 });

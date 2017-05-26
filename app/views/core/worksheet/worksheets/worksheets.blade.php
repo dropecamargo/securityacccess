@@ -16,9 +16,9 @@
 					<td>{{ $worksheet->fecha }}</td>
 					<td nowrap="nowrap" style="text-align:right">					
 					    @if(@$permission->adiciona && $worksheet->fecha == date('Y-m-d'))
-							<a href="{{ route('planilla.planillas.create', ['fecha' => $worksheet->fecha]) }}" class="btn btn-danger">Nuevo registro</a>
+							<a href="{{ route('planilla.planillas.create', ['fecha' => $worksheet->fecha]) }}" class="btn btn-danger btn-sm">Nuevo registro</a>
 						@else
-							<a href="{{ route('planilla.planillas.create', ['fecha' => $worksheet->fecha]) }}" class="btn btn-primary">Consultar</a>
+							<a href="{{ route('planilla.planillas.create', ['fecha' => $worksheet->fecha]) }}" class="btn btn-primary btn-sm">Consultar</a>
 						@endif
 					</td>
 				</tr>

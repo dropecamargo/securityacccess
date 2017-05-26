@@ -20,7 +20,7 @@ class WorksheetExam extends Eloquent {
     {
         $rules = array(
             'nombre' => 'required|string|max:200',
-            'valor' => 'required|min:1|regex:[^[0-9]*$]'
+            'valor' => 'required|min:1|regex:/^\d*(\.\d{2})?$/',
       	);
         
         $validator = Validator::make($data, $rules);        

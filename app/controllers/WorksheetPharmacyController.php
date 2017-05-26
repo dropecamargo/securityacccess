@@ -1,9 +1,9 @@
 <?php
 
-class WorksheetServicesController extends \BaseController {
+class WorksheetPharmacyController extends \BaseController {
 
-    /**
-     * Instantiate a new WorksheetServicesController instance.
+	/**
+     * Instantiate a new WorksheetPharmacyController instance.
      */
     public function __construct()
     {
@@ -18,18 +18,18 @@ class WorksheetServicesController extends \BaseController {
 	 */
 	public function index()
 	{
-		$permission = WorksheetService::getPermission();
+		$permission = WorksheetPharmacy::getPermission();
         if(@$permission->consulta) {
-			$data['services'] = $services = WorksheetService::getData();
+			$data['pharmacies'] = $pharmacies = WorksheetPharmacy::getData();
 			if(Request::ajax()) {
-	            $data["links"] = $services->links();
+	            $data["links"] = $pharmacies->links();
 	            $data["permission"] = $permission;
-	            $services = View::make('core.worksheet.services.services', $data)->render();
-	            return Response::json(['html' => $services]);
+	            $pharmacies = View::make('core.worksheet.pharmacies.pharmacies', $data)->render();
+	            return Response::json(['html' => $pharmacies]);
 	        }
 
             $data['permission'] = $permission;
-	        return View::make('core.worksheet.services.index')->with($data);	
+	        return View::make('core.worksheet.pharmacies.index')->with($data);	
 		}else{
             return View::make('core.denied');   
         }
@@ -43,11 +43,11 @@ class WorksheetServicesController extends \BaseController {
 	 */
 	public function create()
 	{
-		$permission = WorksheetService::getPermission();
+		$permission = WorksheetPharmacy::getPermission();
         if(@$permission->adiciona) {
-			$service = new WorksheetService;
+			$pharmacy = new WorksheetPharmacy;
 
-	        return View::make('core.worksheet.services.form')->with(['service' => $service]);
+	        return View::make('core.worksheet.pharmacies.form')->with(['pharmacy' => $pharmacy]);
 		}else{
             return View::make('core.denied');   
         }
@@ -63,24 +63,22 @@ class WorksheetServicesController extends \BaseController {
 	{
 		if(Request::ajax()) {
   			$data = Input::all();
-		    $service = new WorksheetService;
+		    $pharmacy = new WorksheetPharmacy;
 	      	
-	      	if ($service->isValid($data)){      		        	
+	      	if ($pharmacy->isValid($data)){      		        	
 	        	DB::beginTransaction();	
 	        	try{
-	        		$service->fill($data);
-	        		$service->examen = Input::has('examen') ? true : false;       				        			
-	        		$service->farmacia = Input::has('farmacia') ? true : false;       				        			
-	        		$service->save();
+	        		$pharmacy->fill($data);      				        			
+	        		$pharmacy->save();
 
 					DB::commit();
-					return Response::json(array('success' => true, 'service' => $service));
+					return Response::json(array('success' => true, 'pharmacy' => $pharmacy));
 			    }catch(\Exception $exception){
 				    DB::rollback();
 					return Response::json(array('success' => false, 'errors' =>  "$exception - Consulte al administrador."));
 				}
   			}
-  			$data['errors'] = $service->errors;
+  			$data['errors'] = $pharmacy->errors;
         	$errors = View::make('errors', $data)->render();
     		return Response::json(array('success' => false, 'errors' => $errors));
   		}
@@ -96,22 +94,18 @@ class WorksheetServicesController extends \BaseController {
 	 */
 	public function show($id)
 	{
-		$service = WorksheetService::find($id);
-		if(!$service instanceof WorksheetService) {
+		$pharmacy = WorksheetPharmacy::find($id);
+		if(!$pharmacy instanceof WorksheetPharmacy) {
 			App::abort(404);	
-		}
-		
+		}	
+
 		if(Request::ajax()) {
-			// Elimino datos carritos de session
-			Session::forget(Worksheet::$key_cart_exams);
-			Session::forget(Worksheet::$key_cart_pharmacies);
-
-    		return Response::json(['success' => true, 'examen' => $service->examen, 'farmacia' => $service->farmacia, 'valor' => $service->valor, 'valor_format' => number_format($service->valor, 2,'.',',' )]);
+			return Response::json(['success' => true, 'valor' => $pharmacy->valor, 'nombre' => $pharmacy->nombre]);
 		}
 
-		$permission = WorksheetService::getPermission();
+		$permission = WorksheetPharmacy::getPermission();
         if(@$permission->consulta) {
-	        return View::make('core.worksheet.services.show')->with(['service' => $service, 'permission' => $permission]);
+	        return View::make('core.worksheet.pharmacies.show')->with(['pharmacy' => $pharmacy, 'permission' => $permission]);
 		}else{
             return View::make('core.denied');   
         }
@@ -126,14 +120,14 @@ class WorksheetServicesController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-		$permission = WorksheetService::getPermission();
+		$permission = WorksheetPharmacy::getPermission();
         if(@$permission->modifica) {
-			$service = WorksheetService::find($id);
-			if(!$service instanceof WorksheetService) {
+			$pharmacy = WorksheetPharmacy::find($id);
+			if(!$pharmacy instanceof WorksheetPharmacy) {
 				App::abort(404);	
 			}
 			
-	        return View::make('core.worksheet.services.form')->with(['service' => $service]);
+	        return View::make('core.worksheet.pharmacies.form')->with(['pharmacy' => $pharmacy]);
 		}else{
             return View::make('core.denied');   
         }
@@ -149,27 +143,25 @@ class WorksheetServicesController extends \BaseController {
 	public function update($id)
 	{
 		if(Request::ajax()) {
-			$service = WorksheetService::find($id);
-			if(!$service instanceof WorksheetService) {
+			$pharmacy = WorksheetPharmacy::find($id);
+			if(!$pharmacy instanceof WorksheetPharmacy) {
 				App::abort(404);	
 			}       
 	        $data = Input::all();
-	      	if ($service->isValid($data)){      		        	
+	      	if ($pharmacy->isValid($data)){      		        	
 	       		DB::beginTransaction();	
 	        	try{
-	        		$service->fill($data);	
-	        		$service->examen = Input::has('examen') ? true : false;
-	        		$service->farmacia = Input::has('farmacia') ? true : false;       				        			
-       				$service->save();
+	        		$pharmacy->fill($data);	
+	        		$pharmacy->save();
 					
 					DB::commit();
-					return Response::json(array('success' => true, 'service' => $service));
+					return Response::json(array('success' => true, 'pharmacy' => $pharmacy));
 			    }catch(\Exception $exception){
 				    DB::rollback();
 					return Response::json(array('success' => false, 'errors' =>  "$exception - Consulte al administrador."));
 				}
 	        }
-  			$data['errors'] = $service->errors;
+  			$data['errors'] = $pharmacy->errors;
         	$errors = View::make('errors', $data)->render();
     		return Response::json(array('success' => false, 'errors' => $errors));
 		}

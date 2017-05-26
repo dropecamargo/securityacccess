@@ -16,8 +16,11 @@ class CreateExpenseTable extends Migration {
 			$table->engine = 'InnoDB';
             $table->increments('id');  
             $table->string('nombre',255);
+            $table->integer('servicio')->unsigned()->nullable();
      		$table->date('fecha');
-            $table->float('valor')->nullable();
+            $table->double('valor')->default(0);
+
+        	$table->foreign('servicio')->references('id')->on('servicio')->onDelete('restrict');        	      
         });
 	}
 

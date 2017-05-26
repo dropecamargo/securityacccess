@@ -94,13 +94,17 @@ class WorksheetExamController extends \BaseController {
 	 */
 	public function show($id)
 	{
+		$exam = WorksheetExam::find($id);
+		if(!$exam instanceof WorksheetExam) {
+			App::abort(404);	
+		}
+
+		if(Request::ajax()) {
+			return Response::json(['success' => true, 'valor' => $exam->valor, 'nombre' => $exam->nombre]);
+		}
+
 		$permission = WorksheetExam::getPermission();
         if(@$permission->consulta) {
-			$exam = WorksheetExam::find($id);
-			if(!$exam instanceof WorksheetExam) {
-				App::abort(404);	
-			}
-
 	        return View::make('core.worksheet.exams.show')->with(['exam' => $exam, 'permission' => $permission]);
 		}else{
             return View::make('core.denied');   

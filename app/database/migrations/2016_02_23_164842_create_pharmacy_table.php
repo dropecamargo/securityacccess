@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExamTable extends Migration {
+class CreatePharmacyTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,11 +12,11 @@ class CreateExamTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('examen',function($table){
+		Schema::create('farmacia',function($table){
 			$table->engine = 'InnoDB';
             $table->increments('id');  
             $table->string('nombre',200);
-            $table->double('valor')->default(0);
+            $table->double('valor')->default(0);	        
         });
 	}
 
@@ -27,7 +27,7 @@ class CreateExamTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('examen');
+		Schema::drop('farmacia');
 	}
 
 }

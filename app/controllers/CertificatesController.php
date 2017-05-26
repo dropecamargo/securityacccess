@@ -31,9 +31,9 @@ class CertificatesController extends \BaseController {
 
             $data['permission'] = $permission;
             $data['companys'] = Company::where('activo',true)->lists('nombre', 'id');
-	        return View::make('core.certificates.index')->with($data);	
+	        return View::make('core.certificates.index')->with($data);
 		}else{
-            return View::make('core.denied');   
+            return View::make('core.denied');
         }
 	}
 
@@ -53,7 +53,7 @@ class CertificatesController extends \BaseController {
 
 	        return View::make('core.certificates.form')->with(['certificate' => $certificate, 'companys' => $companys]);
 		}else{
-            return View::make('core.denied');   
+            return View::make('core.denied');
         }
 	}
 
@@ -68,21 +68,21 @@ class CertificatesController extends \BaseController {
 		if(Request::ajax()) {
   			$data = Input::all();
 		    $certificate = new Certificate;
-	      	
-	      	if ($certificate->isValid($data)){ 
+
+	      	if ($certificate->isValid($data)){
 
 	 	        $object = Certificate::where('fecha', Input::get('fecha'))->where('cliente', Input::get('cliente'))->first();
 	 	        if($object instanceof Certificate) {
 					return Response::json(array('success' => false, 'errors' =>  '<div class="alert alert-danger">Ya existe un certificado para esta fecha y para este paciente.</div>'));
-	 	        }     		        	
+	 	        }
 
-	        	DB::beginTransaction();	
+	        	DB::beginTransaction();
 	        	try{
-	        		$certificate->fill($data);	  
+	        		$certificate->fill($data);
 	        		$certificate->booleanStore();
 	        		$certificate->multipleStore();
 	        		$certificate->save();
-	        		
+
 					DB::commit();
 					return Response::json(array('success' => true, 'certificate' => $certificate));
 			    }catch(\Exception $exception){
@@ -108,19 +108,19 @@ class CertificatesController extends \BaseController {
 	{
 		$permission = Certificate::getPermission();
         if(@$permission->consulta) {
-        	
+
         	$certificate = Certificate::select('certificado.*', 'cliente.nombre as cliente_nombre', 'cliente.imagen as cliente_imagen', 'empresa.nombre as empresa_nombre')
 				->join('cliente', 'certificado.cliente', '=', 'cliente.id')
 				->join('empresa', 'certificado.empresa', '=', 'empresa.id')
 				->where('certificado.id', '=', $id)
-				->first();		
+				->first();
 	        if(!$certificate instanceof Certificate) {
-				App::abort(404);	
+				App::abort(404);
 			}
 
 	        return View::make('core.certificates.show')->with(['certificate' => $certificate, 'permission' => $permission]);
 		}else{
-            return View::make('core.denied');   
+            return View::make('core.denied');
         }
 	}
 
@@ -137,19 +137,19 @@ class CertificatesController extends \BaseController {
         if(@$permission->modifica) {
 			$certificate = Certificate::find($id);
 			if(!$certificate instanceof Certificate) {
-				App::abort(404);	
+				App::abort(404);
 			}
-			
+
 			$customer = Customer::find($certificate->cliente);
 			if(!$customer instanceof Customer) {
-				App::abort(404);	
+				App::abort(404);
 			}
 
  	        $companys = Company::where('activo',true)->lists('nombre', 'id');
 
 	        return View::make('core.certificates.form')->with(['certificate' => $certificate, 'customer' => $customer, 'companys' => $companys]);
 		}else{
-            return View::make('core.denied');   
+            return View::make('core.denied');
         }
 	}
 
@@ -165,17 +165,17 @@ class CertificatesController extends \BaseController {
 		if(Request::ajax()) {
 			$certificate = Certificate::find($id);
 			if(!$certificate instanceof Certificate) {
-				App::abort(404);	
-			}      
+				App::abort(404);
+			}
 	        $data = Input::all();
 	      	if ($certificate->isValid($data)){
-	       		DB::beginTransaction();	
+	       		DB::beginTransaction();
 	        	try{
-	        		$certificate->fill($data);	
+	        		$certificate->fill($data);
 	        		$certificate->booleanStore();
 	        		$certificate->multipleStore();
 	        		$certificate->save();
-					
+
 					DB::commit();
 					return Response::json(array('success' => true, 'certificate' => $certificate));
 			    }catch(\Exception $exception){
@@ -214,11 +214,10 @@ class CertificatesController extends \BaseController {
         	$certificate = Certificate::find($id);
         	if($certificate instanceof Certificate) {
 				$output = Certificate::report($certificate);
-				// echo $output;
 				return PDF::load($output, 'A4', 'portrait')->show();
         	}
         }else{
-            return View::make('core.denied');   
+            return View::make('core.denied');
         }
 	}
 }

@@ -32,9 +32,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-3">
             <label>Exámen</label>
             <div>{{ $service->examen ? 'SI' : 'NO' }}</div>
+        </div>
+        <div class="form-group col-md-3">
+            <label>Farmacia</label>
+            <div>{{ $service->farmacia ? 'SI' : 'NO' }}</div>
         </div>
     </div> 
 

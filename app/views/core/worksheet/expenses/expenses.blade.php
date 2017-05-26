@@ -2,26 +2,23 @@
 	{{ $expenses->links() }}
 </div>
 <div align="center">
-	<table id="table-search-companys" class="table table-striped" style="width:80%;">
+	<table id="table-search-companys" class="table table-striped" style="width:30%;">
 		@if(count($expenses) > 0)
 		<thead>
 			<tr>
-				<th>Nombre</th>		
 				<th>Fecha</th>		
-				<th>Valor</th>		
 				<th>&nbsp;</th>
 			</tr>	
 		</thead>     	    	
 		<tbody>
 			@foreach ($expenses as $expense)
 				<tr>
-					<td>{{ $expense->nombre }}</td>
 					<td>{{ $expense->fecha }}</td>
-					<td align="right">${{ number_format($expense->valor, 2,'.',',' ) }}</td>
 					<td nowrap="nowrap" style="text-align:right">					
-						<a href="{{ route('planilla.gastos.show', $expense->id) }}" class="btn btn-info">Ver</a>
-					    @if(@$permission->modifica)
-							<a href="{{ route('planilla.gastos.edit', $expense->id) }}" class="btn btn-primary">Editar</a>
+					    @if(@$permission->adiciona && $expense->fecha == date('Y-m-d'))
+							<a href="{{ route('planilla.gastos.create', ['fecha' => $expense->fecha]) }}" class="btn btn-danger btn-sm">Actualizar gastos</a>
+						@else
+							<a href="{{ route('planilla.gastos.create', ['fecha' => $expense->fecha]) }}" class="btn btn-primary btn-sm">Consultar</a>
 						@endif
 					</td>
 				</tr>

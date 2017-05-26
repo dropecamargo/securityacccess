@@ -53,6 +53,10 @@
         <div class="form-group col-md-3">
             {{ Form::label('examen', 'Exámen') }}
             {{ Form::checkbox('examen', 'check', null, null, ['id' => 'examen']) }}
+        </div> 
+        <div class="form-group col-md-3">
+            {{ Form::label('farmacia', 'Farmacia') }}
+            {{ Form::checkbox('farmacia', 'check', null, null, ['id' => 'farmacia']) }}
         </div>      
     </div>
 
@@ -60,6 +64,18 @@
 
     <script type="text/javascript">
         $(function() {
+            $("#examen").on('click', function() { 
+                if ($('#examen').is(":checked")) { 
+                    $('#farmacia').prop('checked', false);
+                }
+            });
+            
+            $("#farmacia").on('click', function() { 
+                if ($('#farmacia').is(":checked")) { 
+                    $('#examen').prop('checked', false);
+                }
+            });
+            
             $("#btn-submit-service").click(function() {
                 $("#form-add-service").submit();
             });

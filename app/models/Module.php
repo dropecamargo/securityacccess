@@ -24,6 +24,10 @@ class Module extends Eloquent {
 		    case 'worksheetexam': return 10;
 		    case 'worksheetexpense': return 11;
 		    case 'worksheet': return 12;
+		    case 'worksheetpharmacy': return 13;
+		    case 'worksheetreportdaily': return 14;
+		    case 'worksheetreportpharmacy': return 15;
+		    case 'worksheetreportexams': return 16;
 			default: return 'Not state identified';
 		endswitch;
     }
